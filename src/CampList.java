@@ -34,7 +34,27 @@ public class CampList implements Serializable {
         return campList;
     }
 
-    // TODO -- All users can use filters to view the camp list (date, location etc.)
+    // Sorting Algos - id, location, startdate, description, remaining slots
+    public void sortByid(ArrayList<Camp> campList){
+        campList.sort((o1, o2) -> o1.getCampID().compareTo(o2.getCampID()));
+    }
+    public void sortByLocation(ArrayList<Camp> campList){
+        campList.sort(
+                (o1, o2) -> o1.getCampInformation().getLocation().compareTo(o2.getCampInformation().getLocation()));
+    }
+    public void sortByStartDate(ArrayList<Camp> campList){
+        campList.sort(
+                (o1, o2) -> o1.getCampInformation().getStartDate().compareTo(o2.getCampInformation().getStartDate()));
+    }
+    public void sortByDescription(ArrayList<Camp> campList){
+        campList.sort((o1, o2) -> o1.getCampInformation().getDescription()
+                .compareTo(o2.getCampInformation().getDescription()));}
+
+    public void sortByRemainingSlots(ArrayList<Camp> campList){
+         campList.sort((o1, o2) -> Integer.toString(o1.getCampInformation().getTotalSlots() - o1.getStudentCount())
+                .compareTo(Integer.toString(o1.getCampInformation().getTotalSlots() - o1.getStudentCount())));}  
+
+
     // Assume that default is by alphabetical order.
     /*
      * THE FOLLOWING ARE SORTED PRINT FUNCTIONS
@@ -49,9 +69,10 @@ public class CampList implements Serializable {
      * 
      */
 
+
     public void printCampIDSorted() {
         campList = getCampList();
-        campList.sort((o1, o2) -> o1.getCampID().compareTo(o2.getCampID()));
+        sortByid(campList);
         for (int i = 0; i < campList.size(); i++) {
             System.out.println("CampID - " + campList.get(i).getCampID());
         }
@@ -59,8 +80,7 @@ public class CampList implements Serializable {
 
     public void printLocationSorted() {
         campList = getCampList();
-        campList.sort(
-                (o1, o2) -> o1.getCampInformation().getLocation().compareTo(o2.getCampInformation().getLocation()));
+        sortByLocation(campList);
         for (int i = 0; i < campList.size(); i++) {
             System.out.println("CampID - " + campList.get(i).getCampID() + "Location: "
                     + campList.get(i).getCampInformation().getLocation());
@@ -69,8 +89,7 @@ public class CampList implements Serializable {
 
     public void printStartDateSorted() {
         campList = getCampList();
-        campList.sort(
-                (o1, o2) -> o1.getCampInformation().getStartDate().compareTo(o2.getCampInformation().getStartDate()));
+        sortByStartDate(campList);
         for (int i = 0; i < campList.size(); i++) {
             System.out.println("CampID - " + campList.get(i).getCampID() + "Start: "
                     + campList.get(i).getCampInformation().getStartDate()
@@ -80,8 +99,7 @@ public class CampList implements Serializable {
 
     public void printDescriptionSorted() {
         campList = getCampList();
-        campList.sort((o1, o2) -> o1.getCampInformation().getDescription()
-                .compareTo(o2.getCampInformation().getDescription()));
+        sortByDescription(campList);
         for (int i = 0; i < campList.size(); i++) {
             System.out.println("CampID - " + campList.get(i).getCampID() + "Description: "
                     + campList.get(i).getCampInformation().getDescription());
@@ -90,8 +108,7 @@ public class CampList implements Serializable {
 
     public void printRemainingSlotsSorted() {
         campList = getCampList();
-        campList.sort((o1, o2) -> Integer.toString(o1.getCampInformation().getTotalSlots() - o1.getStudentCount())
-                .compareTo(Integer.toString(o1.getCampInformation().getTotalSlots() - o1.getStudentCount())));
+        sortByRemainingSlots(campList);
 
         for (int i = 0; i < campList.size(); i++) {
             int remainingSlots = campList.get(i).getCampInformation().getTotalSlots()
@@ -103,12 +120,36 @@ public class CampList implements Serializable {
         }
     }
 
-    // print all INFO, filter by , printall(0), campid(1), filter by staffid(2)
+    // prints and returns list of viewable camps
+    public ArrayList<Integer> studentViewableCamp(SchoolType school){
+        campList = getCampList();
+        ArrayList<Integer> idList = new ArrayList<Integer>();
+        for (int i = 0; i < campList.size(); i++) {
+            if ((campList.get(i).getCampInformation().getCampGroup() == school || campList.get(i).getCampInformation
+            ().getCampGroup() == SchoolType.NTU) && campList.get(i).getVisibility())  {
+                // print filtered camps only
+                idList.add(i);
+                System.out.println(i + ") CampID - " + campList.get(i).getCampID());
+            }
+        }
+        return idList;
+    }
+
+    // view list students and committee in the camp - only for camp committee and staff
+    // staff check done in ui, studentcommittee check in UI/student
+    public void printStudentAndCommitteeList(String campid){
+        //TODO
+        
+
+    }
+                
+        
+    // return camp indexing in campList AND print all INFO, filter = 0(printall), 1(campid), 2(staffid) 
     public ArrayList<Integer> printAllCampInfo(String id, int filter) {
         campList = getCampList();
         ArrayList<Integer> idList = new ArrayList<Integer>();
         for (int i = 0; i < campList.size(); i++) {
-            if (filter == 1) {
+            if (filter == 1) {//campid
                 // print filtered camps only
                 if (id.equals(campList.get(i).getCampID())) {
                     idList.add(i);
@@ -117,7 +158,7 @@ public class CampList implements Serializable {
 
             }
             // print all camps
-            else if (filter == 2) {
+            else if (filter == 2) {//studentid
                 if (id.equals(campList.get(i).getCampInformation().getStaffInCharge())) {
                     printCamp(i);
                     idList.add(i);
@@ -162,8 +203,9 @@ public class CampList implements Serializable {
      * Below are accessors/mutator methods
      */
 
-    // find camps that are under staffID
-    public ArrayList<String> filterByStaffID(String staffID) {
+     // generally staff specific methods
+
+     public ArrayList<String> filterByStaffID(String staffID) {
         campList = getCampList();
         ArrayList<String> campids = new ArrayList<String>();
         for (int i = 0; i < campList.size(); i++) {
@@ -172,8 +214,9 @@ public class CampList implements Serializable {
             }
         }
         return campids;
-    }
+    }  
 
+    //all camps
     public ArrayList<String> getCampIDList() {
         campList = getCampList();
         ArrayList<String> campids = new ArrayList<String>();
@@ -183,6 +226,7 @@ public class CampList implements Serializable {
         return campids;
     }
 
+    //create camp
     public void addCamp(Camp campToAdd) {
         campList = getCampList();
         campList.add(campToAdd);
@@ -190,7 +234,7 @@ public class CampList implements Serializable {
         updateDB(campList);
     }
 
-    // to allow direct access into specified camp through campList[index]
+    // returns index, for accurate campList[i] accessing
     public int findCampIndex(String campID) {
         campList = getCampList();
         for (int i = 0; i < campList.size(); i++) {

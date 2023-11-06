@@ -15,7 +15,7 @@ public class Enquiry {
         EnquiryDB.writeNewEnquiry(input);
     }
 
-    // this function has prompts to choose whether to view all enquiries
+    // TODO NOT ALL STAFF CAN SEE EVERYTHING - ONLY CAMP COMMITTEE IN CHARGE AND STAFF IN CHARGE!
     public static void viewEnquiries() {
         try {
 

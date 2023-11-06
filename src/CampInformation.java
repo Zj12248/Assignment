@@ -76,6 +76,7 @@ public class CampInformation implements Serializable{
     
     public void setDescription(String description) {this.description = description;}
 
+    //remove? staffincharge should not be changed
     public void setStaffInCharge(String staffInCharge) {this.staffInCharge = staffInCharge;}
 
     

@@ -33,7 +33,9 @@ public class serialisation{
 			ClassNotFoundException{
         FileInputStream fis = new FileInputStream(fileName);
         ObjectInputStream ois = new ObjectInputStream(fis);
-        ArrayList<Camp> obj = (ArrayList<Camp>) ois.readObject(); //ignore
+		//this function will only be called by specific
+		@SuppressWarnings("unchecked")
+        ArrayList<Camp> obj = (ArrayList<Camp>) ois.readObject(); 
         ois.close();
         return obj; 
     }
